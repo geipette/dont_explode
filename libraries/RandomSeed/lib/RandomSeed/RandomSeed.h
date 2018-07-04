@@ -1,7 +1,7 @@
 #ifndef RANDOMSEED_H
 #define RANDOMSEED_H
 
-#include "Arduino.h"
+#include <Arduino.h>
 
 #define RANDOMSEED_NUMBER_OF_BITS 31
 

@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "../lib/RandomSeed/RandomSeed.h"
+#include <RandomSeed.h>
 
 /*
  * The usual way to initialize a random seed on an arinuo is to read an analog pin to get a fairly random number

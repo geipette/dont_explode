@@ -1,4 +1,4 @@
-#include <RandomSeed.h>
+#include "RandomSeed.h"
 
 RandomSeed::RandomSeed(uint8_t analogPin) {
   _analogPin = analogPin;
