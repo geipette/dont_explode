@@ -176,33 +176,33 @@ uint8_t TwoWire::endTransmission(void) {
   return endTransmission(true);
 }
 
-uint8_t WireMock_writtenWireData;
-size_t WireMock_writtenWireSize;
+//uint8_t *WireMock_writtenWireData;
+//size_t WireMock_writtenWireSize;
 
 // must be called in:
 // slave tx event callback
 // or after beginTransmission(address)
 size_t TwoWire::write(uint8_t data) {
-//  if(transmitting){
-//    // in master transmitter mode
-//    // don't bother if buffer is full
-//    if(txBufferLength >= BUFFER_LENGTH){
-//      setWriteError();
-//      return 0;
-//    }
-//    // put byte in tx buffer
-//    txBuffer[txBufferIndex] = data;
-//    ++txBufferIndex;
-//    // update amount in buffer
-//    txBufferLength = txBufferIndex;
-//  }else{
-//    // in slave send mode
-//    // reply to master
-//    twi_transmit(&data, 1);
-//  }
+  if(transmitting){
+    // in master transmitter mode
+    // don't bother if buffer is full
+    if(txBufferLength >= BUFFER_LENGTH){
+      setWriteError();
+      return 0;
+    }
+    // put byte in tx buffer
+    txBuffer[txBufferIndex] = data;
+    ++txBufferIndex;
+    // update amount in buffer
+    txBufferLength = txBufferIndex;
+  }else{
+    // in slave send mode
+    // reply to master
+    twi_transmit(&data, 1);
+  }
 
-  WireMock_writtenWireData = data;
-  WireMock_writtenWireSize = 1;
+//  WireMock_writtenWireData = &data;
+//  WireMock_writtenWireSize = 1;
   return 1;
 }
 
@@ -210,18 +210,18 @@ size_t TwoWire::write(uint8_t data) {
 // slave tx event callback
 // or after beginTransmission(address)
 size_t TwoWire::write(const uint8_t *data, size_t quantity) {
-//  if(transmitting){
-//    // in master transmitter mode
-//    for(size_t i = 0; i < quantity; ++i){
-//      write(data[i]);
-//    }
-//  }else{
-//    // in slave send mode
-//    // reply to master
-//    twi_transmit(data, quantity);
-//  }
-  WireMock_writtenWireData = data;
-  WireMock_writtenWireSize = quantity;
+  if(transmitting){
+    // in master transmitter mode
+    for(size_t i = 0; i < quantity; ++i){
+      write(data[i]);
+    }
+  }else{
+    // in slave send mode
+    // reply to master
+    twi_transmit(data, quantity);
+  }
+//  WireMock_writtenWireData = data;
+//  WireMock_writtenWireSize = quantity;
   return quantity;
 }
 
