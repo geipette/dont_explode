@@ -10,22 +10,18 @@
 String bombSerial = "not initialized.";
 
 class MyBombProtocol : public BombProtocol {
-  State* status() override {
-    return new State(MODULE_STATE_INITIALIZING, 0);
+  State status() override {
+    return State(MODULE_STATE_INITIALIZING, 0);
   }
 
-  void serialNumber(String serial) override {
+  void serialNumber(const String& serial) override {
     bombSerial = serial;
   }
 
 };
 
 
-
 MyBombProtocol myBombProtocol = MyBombProtocol();
-
-BombCom* bombCom = BombCom::createInstance(MY_I2C_ADDRESS, &myBombProtocol);
-
 
 void test_recieve_serial() {
   uint8_t serial[] = "sa12uuukll882";
@@ -41,6 +37,7 @@ void test_poll_status() {
 void setup() {
   delay(2000);
   Serial.begin(9600);
+  BombCom.begin(MY_I2C_ADDRESS, &myBombProtocol);
   UNITY_BEGIN();
 
   RUN_TEST(test_recieve_serial);

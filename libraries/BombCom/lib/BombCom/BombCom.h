@@ -1,5 +1,5 @@
-#ifndef BOMBCOM_H
-#define BOMBCOM_H
+#ifndef BombCom_H
+#define BombCom_H
 
 #include <WString.h>
 
@@ -8,13 +8,22 @@
 #define MODULE_STATE_DEFUSED 'd'
 
 #define OPERATION_SERIAL_NUMBER 's'
+#define OPERATION_RESET 'r'
 
-/**
- * Because of my inability to pass a lambda with capture or a function pointer to a member function I have
- * worked around this by making all relevant callbacks static. This has the effect that The BombCom class
- * must be a singleton. Hoping to solve this in the future.
+/*
+ * The aim of this is to encapsulate the expected communication between bomb modules. All modules except the controller
+ * should implement a BombProtocol and call BombCom.begin(...)
  */
-
+ 
+/**
+  * The current state of a bomb module.
+  *
+  * moduleState can be: MODULE_STATE_INITIALIZING, MODULE_STATE_ACTIVE or MODULE_STATE_DEFUSED
+  * strikeount is the number of "strikes" a module has registered.
+  *
+  * A module should usually not switch from initializing to active before it has recieved the serial number from the
+  * controller.
+  */
 struct State {
   char moduleState;
   uint8_t strikeCount;
@@ -25,28 +34,29 @@ struct State {
   }
 };
 
+
+/**
+ * It is expected that all modules implements this.
+ */
 class BombProtocol {
 public:
-  virtual State* status();
-  virtual void serialNumber(String serial);
+  virtual State status();
+  virtual void serialNumber(const String& serial);
 };
 
-class BombCom {
+class BombComType {
 private:
   BombProtocol* _bombProtocol;
-  static BombCom* instance;
-
-  BombCom(int i2cAddress, BombProtocol* bombProtocol);
   static void read();
   static void receive(int numBytes);
-  static char* readBytes(int numBytes);
+  static String readBytes(int numBytes);
 
 public:
-  static BombCom* createInstance(int i2cAddress, BombProtocol* bombProtocol);
-  static BombCom* getInstance();
-
+  void begin(int i2cAddress, BombProtocol* bombProtocol);
 
 };
 
 
-#endif //BOMBCOM_H
+extern BombComType BombCom;
+
+#endif //BombComType_H

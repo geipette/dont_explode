@@ -6,11 +6,11 @@
 String bombSerial = "not initialized.";
 
 class MyBombProtocol : public BombProtocol {
-  State* status() override {
-    return new State(MODULE_STATE_INITIALIZING, 0);
+  State status() override {
+    return {MODULE_STATE_INITIALIZING, 0};
   }
 
-  void serialNumber(String serial) override {
+  void serialNumber(const String& serial) override {
     bombSerial = serial;
   }
 
@@ -18,11 +18,9 @@ class MyBombProtocol : public BombProtocol {
 
 MyBombProtocol myBombProtocol = MyBombProtocol();
 
-BombCom* bombCom = BombCom::createInstance(MY_I2C_ADDRESS, &myBombProtocol);
-
-
 void setup() {
   Serial.begin(9600);
+  BombCom.begin(MY_I2C_ADDRESS, &myBombProtocol);
 }
 
 void loop() {
